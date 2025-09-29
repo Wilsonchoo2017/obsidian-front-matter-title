@@ -33,11 +33,12 @@ export class Vault extends EventEmitter {
     }
 
     getAbstractFileByPath(path: string): TAbstractFile | null {
-        if (/.*\.md$/.test(path)) {
+        if (/.*\.(md|mdx)$/.test(path)) {
             const file = new TFile();
-            file.basename = path.replace(/.*\/(.*)\.md/, "$1");
-            file.extension = "md";
-            file.name = `${file.basename}.md`;
+            const extension = path.endsWith('.mdx') ? 'mdx' : 'md';
+            file.basename = path.replace(/.*\/(.*)\.mdx?/, "$1");
+            file.extension = extension;
+            file.name = `${file.basename}.${extension}`;
             file.path = path;
             file.vault = new Vault();
             return file;

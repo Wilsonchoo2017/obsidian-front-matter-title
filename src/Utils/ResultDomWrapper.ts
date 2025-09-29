@@ -30,7 +30,7 @@ export default class ResultDomWrapper {
 
     private processLookupItem(file: TFile, item: any): void {
         const restore = !this?.replacer?.isEnabled();
-        if (file.extension !== "md") {
+        if (file.extension !== "md" && file.extension !== "mdx") {
             return;
         }
         const node = item.containerEl.firstElementChild.find(".tree-item-inner");
