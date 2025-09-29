@@ -67,6 +67,9 @@ const SI = {
     processor: "",
     "processor:args": "",
     "processor:argument.transformer": "",
+    "service:mdx:frontmatter:parser": "",
+    "service:metadata:provider": "",
+    "service:metadata:provider:registry": "",
 };
 
 for (const key of Object.keys(SI)) {
