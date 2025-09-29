@@ -24,4 +24,9 @@ data.json
 .packs
 var
 
+# Development tools
+.chunkhound/
+.claude/
+.mcp.json
+
 *.js
