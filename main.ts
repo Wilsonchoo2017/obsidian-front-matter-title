@@ -93,7 +93,9 @@ export default class MetaTitlePlugin extends Plugin implements PluginInterface {
         );
         if (delay > 0) {
             new Notice(`[${this.manifest.name}]\nWill be loaded in ${delay}ms. Background: ${background}`);
-            promise = promise.then(() => new Notice(`[${this.manifest.name}]\nLoaded. Background: ${background}`));
+            promise = promise.then(() => {
+                new Notice(`[${this.manifest.name}]\nLoaded. Background: ${background}`);
+            });
         }
         if (background) {
             return Promise.resolve();
