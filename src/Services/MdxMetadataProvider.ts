@@ -11,14 +11,14 @@ export default class MdxMetadataProvider implements MetadataProviderInterface {
     ) {}
 
     canHandle(path: string, type: string): boolean {
-        return path.endsWith('.mdx') && type === 'frontmatter';
+        return path.endsWith(".mdx") && type === "frontmatter";
     }
 
-    getMetadata(path: string, type: string): any {
+    getMetadata(path: string): any {
         return this.mdxParser.getCachedFrontmatter(path);
     }
 
-    async ensureMetadataCached(path: string, type: string): Promise<void> {
+    async ensureMetadataCached(path: string): Promise<void> {
         await this.mdxParser.ensureFrontmatterCached(path);
     }
 }

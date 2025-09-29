@@ -10,8 +10,8 @@ export default class ObsidianMetadataProvider implements MetadataProviderInterfa
         private metadataCache: () => MetadataCache
     ) {}
 
-    canHandle(path: string, type: string): boolean {
-        return path.endsWith('.md');
+    canHandle(path: string): boolean {
+        return path.endsWith(".md");
     }
 
     getMetadata(path: string, type: string): any {

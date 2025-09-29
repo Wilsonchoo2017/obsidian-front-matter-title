@@ -109,8 +109,9 @@ export default class MetaTitlePlugin extends Plugin implements PluginInterface {
 
     private bindServices(): void {
         // Bind MDX frontmatter parser
-        Container.bind<MdxFrontmatterParser>(SI["service:mdx:frontmatter:parser"])
-            .toConstantValue(new MdxFrontmatterParser(this.app.vault));
+        Container.bind<MdxFrontmatterParser>(SI["service:mdx:frontmatter:parser"]).toConstantValue(
+            new MdxFrontmatterParser(this.app.vault)
+        );
 
         // Bind metadata providers following SOLID principles
         Container.bind<ObsidianMetadataProvider>(SI["service:metadata:provider"]).to(ObsidianMetadataProvider);
@@ -125,18 +126,15 @@ export default class MetaTitlePlugin extends Plugin implements PluginInterface {
                 (path: string): any =>
                     this.app.vault.getAbstractFileByPath(path)
         );
-        
+
         // Enhanced metadata factory using provider registry pattern
         Container.bind<interfaces.Factory<{ [k: string]: any }>>(SI["factory:obsidian:meta"]).toFactory<
             { [k: string]: any },
             [string, string]
-        >(
-            () =>
-                (path: string, type: string): any => {
-                    const registry = Container.get<MetadataProviderRegistry>(SI["service:metadata:provider:registry"]);
-                    return registry.getMetadata(path, type);
-                }
-        );
+        >(() => (path: string, type: string): any => {
+            const registry = Container.get<MetadataProviderRegistry>(SI["service:metadata:provider:registry"]);
+            return registry.getMetadata(path, type);
+        });
         Container.bind<ObsidianFacade>(SI["facade:obsidian"]).toConstantValue(new ObsidianFacade(this.app as AppExt));
 
         Container.bind<ObsidianMetaFactory>(SI["factory:metadata:cache"]).toFunction(() => this.app.metadataCache);
@@ -156,31 +154,31 @@ export default class MetaTitlePlugin extends Plugin implements PluginInterface {
                 this.dispatcher.dispatch("metadata:cache:changed", new Event({ path: file.path, cache }))
             )
         );
-        
+
         // Add file change detection for .mdx files
         this.registerEvent(
-            this.app.vault.on("modify", async (file) => {
-                if (file.path.endsWith('.mdx')) {
+            this.app.vault.on("modify", async file => {
+                if (file.path.endsWith(".mdx")) {
                     const registry = Container.get<MetadataProviderRegistry>(SI["service:metadata:provider:registry"]);
-                    await registry.ensureMetadataCached(file.path, 'frontmatter');
+                    await registry.ensureMetadataCached(file.path, "frontmatter");
                     // Dispatch metadata change event to trigger UI updates
                     this.dispatcher.dispatch("metadata:cache:changed", new Event({ path: file.path, cache: null }));
                 }
             })
         );
-        
+
         this.app.workspace.onLayoutReady(async () => {
             this.registerEvent(
                 this.app.vault.on("rename", ({ path: actual }, old) =>
                     this.dispatcher.dispatch("file:rename", new Event({ old, actual }))
                 )
             );
-            
+
             // Pre-cache frontmatter for all .mdx files on startup
-            const mdxFiles = this.app.vault.getFiles().filter(f => f.path.endsWith('.mdx'));
+            const mdxFiles = this.app.vault.getFiles().filter(f => f.path.endsWith(".mdx"));
             const registry = Container.get<MetadataProviderRegistry>(SI["service:metadata:provider:registry"]);
-            await Promise.all(mdxFiles.map(f => registry.ensureMetadataCached(f.path, 'frontmatter')));
-            
+            await Promise.all(mdxFiles.map(f => registry.ensureMetadataCached(f.path, "frontmatter")));
+
             await new Promise(r => setTimeout(r, 3000));
             this.reloadFeatures();
             await this.mc.refresh();
